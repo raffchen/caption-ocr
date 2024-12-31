@@ -70,7 +70,7 @@ class Application:
             self.scanner.winfo_width(),
             self.scanner.winfo_height(),
         )
-        image = ImageGrab.grab(bbox=(x+10, y+30, x+w, y+h+30))
+        image = ImageGrab.grab(bbox=(x+10, y+30, x+w, y+h+30), all_screens=True)
 
         diff = ImageChops.difference(self.current_image, image)
 
@@ -83,7 +83,7 @@ class Application:
             self.image_display.configure(image=tkimage)
             self.image_display.image = tkimage
 
-            text = pytesseract.image_to_string(image, lang="chi_tra")
+            text = pytesseract.image_to_string(image, lang="eng")
             self.orig_text_display.delete("1.0", tk.END)
             self.orig_text_display.insert(tk.END, text)
 
