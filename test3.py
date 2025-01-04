@@ -7,8 +7,8 @@
 # display results on main window
 import tkinter as tk
 
+import easyocr
 import numpy as np
-import pytesseract
 from PIL import Image, ImageChops, ImageGrab, ImageTk
 
 
@@ -56,6 +56,8 @@ class Application:
         canvas = tk.Canvas(frame, background="maroon3")
         canvas.pack(fill=tk.BOTH, expand=tk.YES)
 
+        self.reader = easyocr.Reader(['ch_tra', 'en'])
+
         self.current_image = Image.fromarray(np.zeros((800, 200, 3)), mode="RGB")
 
     def mainloop(self):
@@ -83,9 +85,9 @@ class Application:
             self.image_display.configure(image=tkimage)
             self.image_display.image = tkimage
 
-            text = pytesseract.image_to_string(image, lang="eng")
+            result = self.reader.readtext(np.array(image), detail=0)
             self.orig_text_display.delete("1.0", tk.END)
-            self.orig_text_display.insert(tk.END, text)
+            self.orig_text_display.insert(tk.END, '\n'.join(result))
 
 
 if __name__ == "__main__":
