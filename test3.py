@@ -1,10 +1,3 @@
-# loop
-# -------------------------------
-# tk update
-# PIL grab image
-# tesseract OCR
-# google translate
-# display results on main window
 import asyncio
 import tkinter as tk
 from dataclasses import dataclass
@@ -111,12 +104,18 @@ class Application:
     def translate(self):
         async def get_translation():
             async with Translator() as translator:
-                try:
-                    translation = await translator.translate(self.orig_text_display.get("1.0", tk.END), dest='en')
+                for attempt in range(3):
+                    try:
+                        translation = await translator.translate(self.orig_text_display.get("1.0", tk.END), dest='en')
+                        self.trans_text_display.delete("1.0", tk.END)
+                        self.trans_text_display.insert(tk.END, translation.text)
+                    except httpx.ConnectTimeout:
+                        continue
+                    else:
+                        break
+                else:
                     self.trans_text_display.delete("1.0", tk.END)
-                    self.trans_text_display.insert(tk.END, translation.text)
-                except httpx.ConnectTimeout:
-                    pass
+                    self.trans_text_display.insert(tk.END, "translation failed...")
             
         if self.text_changed:
             asyncio.run(get_translation())
